@@ -48,7 +48,8 @@ export class AlltimesComponent implements OnInit {
 
     const queryObservable = this.apollo.watchQuery({
 
-      query: AllClientsQuery
+      query: AllClientsQuery,
+      pollInterval: 200 
 
     }).subscribe(({ data, loading }: any) => {
 
