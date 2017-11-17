@@ -40,9 +40,68 @@
       <label for="tableSearch">Search: </label>
       <input id="tableSearch" #tableSearch type="text" placeholder="Search All The Things">
       <button type="button" pButton icon="fa-table" label="Export" (click)="dt.exportCSV()" style="float:right;"></button>
+      <button type="button" pButton icon="fa-table" label="Add Time" (click)="displayEntryForm = true" style="float:left;"></button>
     </p-footer>
   </p-dataTable>
-
   <p-contextMenu #tableContextMenu [model]="contextMenu"></p-contextMenu>
-
+  <p-dialog header="Add Time" [(visible)]="displayEntryForm" [responsive]="true" width="700"
+  height="550">
+    <form [formGroup]="addEntryForm" class="ui-g"> 
+      <p-panel class="ui-g-12">
+        <div class="dialogBody">
+          <div class="ui-g">
+              <label for="User" class="ui-g-3 ui-md-2">User:</label>
+              <input id="User" formControlName="User" class="ui-g-3 ui-md-6" type="text" />
+              <div class="ui-g-12">
+                  <at-fielderrors [form]="addEntryForm" field="User" nicename="User"> </at-fielderrors>
+              </div>
+          </div>
+          <div class="ui-g">
+              <label for="Project" class="ui-g-3 ui-md-2">Project:</label>
+              <input id="Project" formControlName="Project" class="ui-g-3 ui-md-6" type="text" />
+              <div class="ui-g-12">
+                  <at-fielderrors [form]="addEntryForm" field="Project" nicename="Project"> </at-fielderrors>
+              </div>
+          </div>
+          <div class="ui-g">
+              <label for="Category" class="ui-g-3 ui-md-2">Category:</label>
+              <input id="Category" formControlName="Category" class="ui-g-3 ui-md-6" type="text" />
+              <div class="ui-g-12">
+                  <at-fielderrors [form]="addEntryForm" field="Category" nicename="Category"> </at-fielderrors>
+              </div>
+          </div>
+          <div class="ui-g">
+              <label for="StartTime" class="ui-g-3 ui-md-2">Start Time:</label>
+              <input id="StartTime" formControlName="StartTime" class="ui-g-3 ui-md-6" type="number" />
+              <div class="ui-g-12">
+                  <at-fielderrors [form]="addEntryForm" field="StartTime" nicename="Start Time"> </at-fielderrors>
+              </div>
+          </div>
+          <div class="ui-g">
+              <label for="EndTime" class="ui-g-3 ui-md-2">End Time:</label>
+              <input id="EndTime" formControlName="EndTime" class="ui-g-3 ui-md-6" type="number" />
+              <div class="ui-g-12">
+                  <at-fielderrors [form]="addEntryForm" field="EndTime" nicename="End Time"> </at-fielderrors>
+              </div>
+          </div>
+          <button pButton label="Save" icon="fa-check" [disabled]="hasFormErrors()" (click)="saveNewEntry()"></button>
+          <button pButton label="Cancel" icon="fa-times" (click)="cancelDialog()" class="ui-button-secondary"></button>
+        </div>
+        </p-panel>
+    </form>
+    
+  </p-dialog>
 </div>
+
+<p-confirmDialog icon="fa fa-question-circle" width="425" [visible]="false" #confirmDialog>
+  
+    <p-footer>
+      <button type="button" pButton icon="fa-close" label="No, go back" (click)="confirmDialog.reject()"></button>
+      <button type="button" pButton icon="fa-check" label="Yes, lose changes"
+              (click)="confirmDialog.accept() && confirmDialog.hide()"></button>
+    </p-footer>
+  
+  
+  </p-confirmDialog>
+  
+  <p-growl [value]="messages"></p-growl>
