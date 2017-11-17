@@ -40,7 +40,7 @@ function getWelcomeResponse(callback) {
     const sessionAttributes = {};
     const cardTitle = 'Welcome';
     const speechOutput = 'Welcome to agile times. ' +
-    'Please add new timesheet by saying, add timesheet to Project name and category.';
+        'Please add new timesheet by saying, add timesheet to Project name and category.';
     // If the user either does not reply to the welcome message or says something that is not
     // understood, they will be prompted again with this text.
     const repromptText = 'Please add new timesheet by saying, ' +
@@ -79,11 +79,14 @@ function addTimesheet(intent, session, callback) {
     const shouldEndSession = true;
     let speechOutput = '';
 
-    if (projectSlot && typeof(projectSlot.value) !== 'undefined') {
+    if (projectSlot && typeof (projectSlot.value) !== 'undefined') {
         const project = projectSlot.value;
         const category = categorySlot.value;
         sessionAttributes = createAttributes(project, category);
-        speechOutput = categorySlot && typeof(categorySlot.value) !== 'undefined' ? `Got it. Adding new timesheet to ${project} project, ${category} category for James Getsinger.` : `Got it. Adding new timesheet to ${project} project for James Getsinger.`;
+        speechOutput = categorySlot && typeof (categorySlot.value) !== 'undefined' ? `Got it. Adding new timesheet to ${project} project, ${category} category.` : `Got it. Adding new timesheet to ${project} project.`;
+
+        createNewTimeSheet(project, category);
+
     } else {
         speechOutput = "I couldn't find that project name. Please try again.";
     }
@@ -93,6 +96,38 @@ function addTimesheet(intent, session, callback) {
     // will end.
     callback(sessionAttributes,
         buildSpeechletResponse(intent.name, speechOutput, repromptText, shouldEndSession));
+}
+
+function createNewTimeSheet(projectName, categoryName) {
+
+    var variables = {
+        user: 'testUser',
+        project: projectName,
+        category: categoryName ? categoryName : '',
+        startTime: 12,
+        endTime: 18,
+        date: new Date()
+    };
+
+    var client = require('graphql-client')({ url: 'https://api.graph.cool/simple/v1/cj7qirvgf02cl0116yr8ks74h' });
+
+    client.query(`
+        mutation createTimesheet ($user: String!, $project: String!, $category: String!, $startTime: Int!, $endTime: Int!, $date: DateTime!) {
+            createTimesheet(user: $user, project: $project, category: $category, startTime: $startTime, endTime: $endTime, date: $date ) {
+                id
+            }
+        }`, variables, function (req, res) {
+            if (res.status === 401) {
+                throw new Error('Not authorized');
+            }
+        })
+        .then(function (body) {
+            console.log(body);
+        })
+        .catch(function (err) {
+            console.log(err.message);
+        });
+
 }
 
 // --------------- Events -----------------------
